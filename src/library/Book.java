@@ -1,6 +1,6 @@
 package library;
 
-public class Book {
+public class Book implements java.io.Serializable {
     private int id;
     private String authors;
     private String name;
