@@ -1,12 +1,12 @@
 package library;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
+import java.text.SimpleDateFormat;
 
 public class BooksCatalogue {
     private static final String FILE_NAME = "books.bin";
     private ArrayList<Book> books = new ArrayList<>();
-    private static int bookId = -1; //Чтобы начать считать с нуля
+    private static int bookId;
 
     /**
      * Конструктор класса каталога книг.
@@ -22,13 +22,12 @@ public class BooksCatalogue {
      * @return true, если книга была добавлена, или false, если добавления не произошло.
      */
     public boolean addBook(String authors, String name, int publishingYear, int pagesQuantity) {
-        bookId++;
-        Book book = new Book(bookId, authors, name, publishingYear, pagesQuantity);
-        if (isExist(authors, name, publishingYear)) return false;
-        else {
+        Book book = new Book(bookId++, authors, name, publishingYear, pagesQuantity);
+        if (isCanBeAdded(authors, name, publishingYear, pagesQuantity)) {
             books.add(book);
             return true;
         }
+        else return false;
     }
 
     /**
@@ -50,7 +49,8 @@ public class BooksCatalogue {
      * @return количество книг.
      */
     public int getBooksQuantity() {
-        return books.size();
+        if (books == null) return 0;
+        else return books.size();
     }
 
     /**
@@ -127,5 +127,31 @@ public class BooksCatalogue {
     private boolean isExist(String authors, String name, int publishingYear) {
         if (getBook(authors, name, publishingYear) != null) return true;
         else return false;
+    }
+
+    /**
+     * Проверяет введенный год на корректность
+     * @param year Год
+     * @return True, если год корректен. False, если год некорректен
+     */
+    private boolean isCorrectYear(int year) {
+        long currentTimeMillis = System.currentTimeMillis();
+        String currentYear = new SimpleDateFormat("yyyy").format(currentTimeMillis);
+        if (year < 100 || year > Integer.valueOf(currentYear)) return false;
+        else return true;
+    }
+
+    /**
+     * Проверяет возможность добавления книги в каталог
+     * @param authors Автор(ы), написавший данную книгу
+     * @param name Название книги
+     * @param publishingYear Год издания
+     * @param pagesQuantity Количество страниц в книге
+     * @return True, если книгу добавить возможно. False, если невозможно.
+     */
+    private boolean isCanBeAdded(String authors, String name, int publishingYear, int pagesQuantity) {
+        if (!isCorrectYear(publishingYear) || pagesQuantity < 0 || isExist(authors, name, publishingYear))
+            return false;
+        else return true;
     }
 }
