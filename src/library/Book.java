@@ -1,7 +1,7 @@
 package library;
 
 public class Book {
-    private String id;
+    private int id;
     private String authors;
     private String name;
     private int publishingYear;
@@ -15,7 +15,7 @@ public class Book {
      * @param publishingYear Год издания
      * @param pagesQuantity Количество страниц в книге
      */
-    public Book(String id, String authors, String name, int publishingYear, int pagesQuantity) {
+    public Book(int id, String authors, String name, int publishingYear, int pagesQuantity) {
         this.id = id;
         this.authors = authors;
         this.name = name;
@@ -23,10 +23,10 @@ public class Book {
         this.pagesQuantity = pagesQuantity;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

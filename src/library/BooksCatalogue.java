@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 public class BooksCatalogue {
     ArrayList<Book> books = new ArrayList<>();
+    private static int bookId = -1; //Чтобы начать считать с нуля
 
     /**
      * Конструктор класса каталога книг. Принимает книгу.
@@ -14,25 +15,18 @@ public class BooksCatalogue {
     }
 
     /**
-     * Конструктор класса каталога книг. Принимает массив книг.
-     * @param books Массив книг, которые хочет добавить полтьзователь.
-     */
-    public BooksCatalogue(Book[] books) {
-        for (Book book : books) addBook(book);
-    }
-
-    /**
      * Конструктор класса каталога книг.
      */
     public BooksCatalogue() {}
 
     /**
      * Добавляет новую книгу.
-     * @param book Книга, которую хочет добавить пользователь.
      * @return true, если книга была добавлена, или false, если добавления не произошло.
      */
-    public boolean addBook(Book book) {
-        if (isExist(book)) return false;
+    public boolean addBook(String authors, String name, int publishingYear, int pagesQuantity) {
+        bookId++;
+        Book book = new Book(bookId, authors, name, publishingYear, pagesQuantity);
+        if (isExist(authors, name, publishingYear)) return false;
         else {
             books.add(book);
             return true;
@@ -41,11 +35,12 @@ public class BooksCatalogue {
 
     /**
      * Удаляет книгу по ссылке на нее.
-     * @param book Книга, которую хочет удалить пользователь.
+     * @param id ID книги, которую хочет удалить пользователь.
      * @return true, если книга была удалена, или false, если такую книгу найти не удалось.
      */
-    public boolean removeBook(Book book) {
-        if (isExist(book)) {
+    public boolean removeBook(int id) {
+        Book book = getBook(id);
+        if (book != null) {
             books.remove(book);
             return true;
         }
@@ -69,14 +64,30 @@ public class BooksCatalogue {
     }
 
     /**
-     *
-     * @param book Книга, которую нужно проверить на уникальность.
+     * Возвращает книгу по ее ID
+     * @param id Идентификационный номер книги
+     * @return найденную книгу или null, если книга не найдена
+     */
+    public Book getBook(int id) {
+        for (Book book: books)
+            if (book.getId() == id)
+                return book;
+        return null;
+    }
+
+    /**
      * @return true, если книга уже существует в каталоге, или false, если такой книги в каталоге еще нет.
      */
-    private boolean isExist(Book book) {
+    private boolean isExist(String authors, String name, int publishingYear) {
         Iterator<Book> iterator = books.iterator();
-        while (iterator.hasNext())
-            if (iterator.next().equals(book)) return true;
+        while (iterator.hasNext()) {
+            Book book = iterator.next();
+            String bookAuthors = book.getAuthors();
+            String bookName = book.getName();
+            int bookPublishingYear = book.getPublishingYear();
+            if (bookAuthors.equalsIgnoreCase(authors) && bookName.equalsIgnoreCase(name)
+                    && bookPublishingYear == publishingYear) return true;
+        }
         return false;
     }
 }
