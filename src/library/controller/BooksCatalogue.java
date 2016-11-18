@@ -1,8 +1,13 @@
-package library;
+package library.controller;
+import library.model.Book;
+import library.exceptions.*;
 import java.io.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * Created by Spmart on 14.11.2016.
+ */
 public class BooksCatalogue {
     private static final String FILE_NAME = "books.bin";
     private ArrayList<Book> books = new ArrayList<>();
@@ -21,13 +26,12 @@ public class BooksCatalogue {
      * @param pagesQuantity Количество страниц в книге
      * @return true, если книга была добавлена, или false, если добавления не произошло.
      */
-    public boolean addBook(String authors, String name, int publishingYear, int pagesQuantity) {
+    public void addBook(String authors, String name, int publishingYear, int pagesQuantity)
+            throws BookCantBeAddedException, BookNotExistException {
         Book book = new Book(bookId++, authors, name, publishingYear, pagesQuantity);
-        if (isCanBeAdded(authors, name, publishingYear, pagesQuantity)) {
+        if (isCanBeAdded(authors, name, publishingYear, pagesQuantity))
             books.add(book);
-            return true;
-        }
-        else return false;
+        else throw new BookCantBeAddedException("Ошибка! Книнга уже существует или введены некорректные аргументы.");
     }
 
     /**
@@ -35,7 +39,7 @@ public class BooksCatalogue {
      * @param id ID книги, которую хочет удалить пользователь.
      * @return true, если книга была удалена, или false, если такую книгу найти не удалось.
      */
-    public boolean removeBook(int id) {
+    public boolean removeBook(int id) throws BookNotExistException {
         Book book = getBook(id);
         if (book != null) {
             books.remove(book);
@@ -58,7 +62,8 @@ public class BooksCatalogue {
      * @return все книги.
      */
     public ArrayList<Book> getBooks() {
-        return books;
+        if (books == null) throw new NullPointerException("Ошибка! Еще не было добавлено ни одной книги.");
+        return books; //TODO: Проверить, не будет ли возвращать null
     }
 
     /**
@@ -66,11 +71,11 @@ public class BooksCatalogue {
      * @param id Идентификационный номер книги
      * @return найденную книгу или null, если книга не найдена
      */
-    public Book getBook(int id) {
+    public Book getBook(int id) throws BookNotExistException {
         for (Book book: books)
             if (book.getId() == id)
                 return book;
-        return null;
+        throw new BookNotExistException("Ошибка! Книги с таким ID не существует."); //Ошибка вывалится, если книга не будет найдена
     }
 
     /**
@@ -80,7 +85,7 @@ public class BooksCatalogue {
      * @param publishingYear Год издания
      * @return Null, если книга не найдена или найденную книгу
      */
-    public Book getBook(String authors, String name, int publishingYear) {
+    public Book getBook(String authors, String name, int publishingYear) throws BookNotExistException {
         Iterator<Book> iterator = books.iterator();
         while (iterator.hasNext()) {
             Book book = iterator.next();
@@ -90,7 +95,7 @@ public class BooksCatalogue {
             if (bookAuthors.equalsIgnoreCase(authors) && bookName.equalsIgnoreCase(name)
                     && bookPublishingYear == publishingYear) return book;
         }
-        return null;
+        throw new BookNotExistException("Ошибка! Искомой книги не существует. Проверьте введеные данные.");
     }
 
     /**
@@ -124,7 +129,7 @@ public class BooksCatalogue {
     /**
      * @return true, если книга уже существует в каталоге, или false, если такой книги в каталоге еще нет.
      */
-    private boolean isExist(String authors, String name, int publishingYear) {
+    private boolean isExist(String authors, String name, int publishingYear) throws BookNotExistException {
         if (getBook(authors, name, publishingYear) != null) return true;
         else return false;
     }
@@ -149,7 +154,8 @@ public class BooksCatalogue {
      * @param pagesQuantity Количество страниц в книге
      * @return True, если книгу добавить возможно. False, если невозможно.
      */
-    private boolean isCanBeAdded(String authors, String name, int publishingYear, int pagesQuantity) {
+    private boolean isCanBeAdded(String authors, String name, int publishingYear, int pagesQuantity)
+            throws BookNotExistException {
         if (!isCorrectYear(publishingYear) || pagesQuantity < 0 || isExist(authors, name, publishingYear))
             return false;
         else return true;

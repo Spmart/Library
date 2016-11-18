@@ -1,4 +1,6 @@
-package library;
+package library.controller;
+
+import library.model.ExampleBook;
 
 import java.io.*;
 import java.util.Vector;

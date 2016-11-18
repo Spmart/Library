@@ -1,5 +1,8 @@
-package library;
+package library.model;
 
+/**
+ * Created by Spmart on 14.11.2016.
+ */
 public class Book implements java.io.Serializable {
     private int id;
     private String authors;
