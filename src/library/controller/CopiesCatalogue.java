@@ -8,13 +8,13 @@ import java.util.Vector;
 /**
  * Created by Кирилл on 14.11.2016.
  */
-public class ControllerOfExamplesBooks {
+public class CopiesCatalogue {
     //массив экземплятров книг
     private Vector<ExampleBook> examplesBooks = null;
     //поле для выдачи айди
     private static int idExampleBook;
 
-    public ControllerOfExamplesBooks() {
+    public CopiesCatalogue() {
         try {
             ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream("ExamplesBooks.bin"));
             examplesBooks = (Vector<ExampleBook>) (inputFile.readObject());
