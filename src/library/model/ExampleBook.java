@@ -1,5 +1,7 @@
 package library.model;
 
+import library.controller.InventoryNumberException;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -9,37 +11,68 @@ import java.util.Vector;
 /**
  * Created by Кирилл on 14.11.2016.
  */
-public class ExampleBook implements java.io.Serializable {
-    //первичный ключ
-    private int idExampleBook = 0;
-    //выдана ли книга
+    public class ExampleBook implements java.io.Serializable {
+    private int inventoryNumber = 0;
     private boolean issued = false;
-    //вторичный ключ книги
     private int idBook = 0;
 
-    public ExampleBook(int idExampleBook, int idBook, boolean issued) {
-        this.idExampleBook = idExampleBook;
+    /**
+     *
+     * @param inventoryNumber инвектарный номер экзепляра книги
+     * @param idBook id книги
+     * @param issued выдана или нет
+     */
+
+
+    public ExampleBook(int inventoryNumber, int idBook, boolean issued) {
+        this.idBook = idBook;
+        this.issued = issued;
+        setInventoryNumber(inventoryNumber);
+    }
+    public ExampleBook(int idBook, boolean issued) {
+        this.inventoryNumber = InventoryNumberGenerator.generate();
         this.idBook = idBook;
         this.issued = issued;
     }
 
-    // гет  для первичного ключа
-    public int getIdExampleBook() {
-        return idExampleBook;
+
+
+    public int getInventoryNumber()
+    {
+        return inventoryNumber;
+    }
+    public void setInventoryNumber(int inventoryNumber){
+        if(InventoryNumberGenerator.correctInventoryNumber(inventoryNumber)) {
+            if(!InventoryNumberGenerator.isExistByInventoryNumber(inventoryNumber)) {
+                this.inventoryNumber = inventoryNumber;
+            }
+            else
+            {
+                throw new InventoryNumberException(InventoryNumberException.EXIST);
+            }
+        }
+        else
+        {
+            throw new InventoryNumberException(InventoryNumberException.NOT_CORRECT);
+        }
     }
 
-    //гет  для вторичного ключа книги
-    public int getIdBook() {
+    public int getIdBook()
+    {
         return idBook;
     }
+    public void setIdBook(int idBook)
+    {
+        this.idBook=idBook;
+    }
 
-    //гет сет для индикатора наличия
-    public boolean getIssued() {
+    public boolean getIssued()
+    {
         return issued;
     }
-
-    public void setIssued(boolean issued) {
-        this.issued = issued;
+    public void setIssued(boolean issued)
+    {
+        this.issued=issued;
     }
 
-}
+    }

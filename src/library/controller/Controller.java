@@ -10,7 +10,7 @@ public class Controller {
     private BooksCatalogue booksCatalogue; //Контроллер книг
     private CopiesCatalogue copiesCatalogue; //Контроллер экземпляров книг
 
-    public Controller() {
+    public Controller()throws java.lang.ClassNotFoundException,java.io.IOException {
         booksCatalogue = new BooksCatalogue();
         copiesCatalogue = new CopiesCatalogue();
     }
@@ -41,6 +41,11 @@ public class Controller {
 
     public void writeToFile() throws IOException {
         booksCatalogue.writeToFile();
+        copiesCatalogue.save();
+    }
+    public void addExampleBook(String authors, String name, int publishingYear,boolean issued)
+    {
+        copiesCatalogue.addExampleBook(booksCatalogue.getBook(authors,name,publishingYear).getId(),issued);
     }
 
 

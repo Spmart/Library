@@ -1,94 +1,190 @@
 package library.controller;
 
 import library.model.ExampleBook;
+import library.model.InventoryNumberGenerator;
 
 import java.io.*;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by Кирилл on 14.11.2016.
  */
 public class CopiesCatalogue {
-    //массив экземплятров книг
-    private Vector<ExampleBook> examplesBooks = null;
-    //поле для выдачи айди
-    private static int idExampleBook;
+    private ArrayList<ExampleBook> examplesBooks=null;
+    private String nameFileForExamples="ExamplesBooks.bin";
 
-    public CopiesCatalogue() {
-        try {
-            ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream("ExamplesBooks.bin"));
-            examplesBooks = (Vector<ExampleBook>) (inputFile.readObject());
+
+    public CopiesCatalogue()throws java.lang.ClassNotFoundException,java.io.IOException
+    {
+        try
+        {
+            ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(nameFileForExamples));
+            examplesBooks=(ArrayList<ExampleBook>) (inputFile.readObject());
             inputFile.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
-        if (examplesBooks == null) {
-            examplesBooks = new Vector<ExampleBook>();
+        catch (Exception e)
+        {
+            throw e;
         }
-    }
-
-    //гет для массива экзепляра книг
-    public Vector<ExampleBook> getExamplesBooks() {
-        return examplesBooks;
-    }
-
-    //поиск индекса экзепляра в массиве по айди
-    private int getIndexInMasById(int id) {
-        int length = examplesBooks.capacity();
-        for (int i = 0; i < length; i++) {
-            if (examplesBooks.get(i).getIdExampleBook() == id)
-                return i;
+        if (examplesBooks==null)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
         }
-        return (-1);
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
-    //сохранить в файл текущий массив экзепляров
-    public void save() {
-        try {
-            ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("ExamplesBooks"));
-            outFile.writeObject(examplesBooks);
-            outFile.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+    /**
+     * Конструктор инициализацией массива экзепляров из файла
+     * @param fileExamplesBooks имя файла , из которого нужно считать массив экземляров
+     */
+    public CopiesCatalogue(String fileExamplesBooks)throws java.lang.ClassNotFoundException,java.io.IOException
+    {
+        ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(fileExamplesBooks));
+        examplesBooks=(ArrayList<ExampleBook>) (inputFile.readObject());
+        inputFile.close();
+
+        if (examplesBooks==null)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
         }
+        nameFileForExamples=fileExamplesBooks;
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
-    // добавить экзепляр
-    public void addExampleBook(int idBook, boolean issued) {
-        idExampleBook++;
-        examplesBooks.add(new ExampleBook(idExampleBook, idBook, issued));
+    /**
+     * Возвращает все экзепляры книг
+     * @return examplesBooks
+     */
+    public ArrayList<ExampleBook> getExamplesBooks()
+    {
+       return examplesBooks;
     }
 
-    //удалить экзепляр по айди
-    public void removeExampleBookById(int id) {
-        int index = getIndexInMasById(id);
-        if (index > -1)
+    /**
+     * Метод для поиска индеса в массиве по inventoryNumber
+     * @param inventoryNumber инвентраный номер экзепляра книги
+     * @return index
+     */
+    private int getIndexInMasByInventoryNumber(int inventoryNumber)
+    {
+        int index=0;
+        for (ExampleBook exampleBook: examplesBooks)
+        {
+            if(exampleBook.getInventoryNumber()==inventoryNumber)
+                return index;
+            index++;
+        }
+        throw new InventoryNumberException(InventoryNumberException.NOT_EXIST);
+    }
+
+    /**
+     * Сеттер для поля nameFileForExamples
+     * @param nameFileForExamples имя устанавливаемого файла
+     */
+    public void setNameFileForExamples(String nameFileForExamples) {
+        this.nameFileForExamples = nameFileForExamples;
+    }
+
+    /**
+     * Геттер для поля nameFileForExamples
+     * @return nameFileForExamples
+     */
+    public String getNameFileForExamples() {
+        return nameFileForExamples;
+    }
+
+    /**
+     * сохраняет экзепляры книг в файл
+     */
+    public void save() throws java.io.IOException
+    {
+        ObjectOutputStream outFile=new ObjectOutputStream(new FileOutputStream(nameFileForExamples));
+        outFile.writeObject(examplesBooks);
+        outFile.close();
+
+    }
+
+    /**
+     *Метод добавления экзепляра книг
+     * @param idBook id книги
+     * @param issued выдана/не выдана
+     */
+    public void addExampleBook( int idBook, boolean issued)
+    {
+        examplesBooks.add(new ExampleBook(idBook,issued));
+    }
+
+    /**
+     *Удаляет экзепляр книги по полю inventoryNumber
+     * @param inventoryNumber
+     */
+    public void removeExampleBookByInventoryNumber(int inventoryNumber)
+    {
+        if(InventoryNumberGenerator.correctInventoryNumber(inventoryNumber)) {
+            int index = getIndexInMasByInventoryNumber(inventoryNumber);
             examplesBooks.remove(index);
+        }
+        else
+            throw new InventoryNumberException(InventoryNumberException.NOT_CORRECT);
     }
 
-    //удалить экзепляр по индексу
-    public void removeExampleBookByIndex(int index) {
+    /**
+     * Удаляет экзепляр книги по индексу в массиве examplesBooks
+     * @param index индекс в массиве examplesBooks
+     */
+    public void removeExampleBookByIndex(int index)
+    {
         examplesBooks.remove(index);
     }
 
-    //количество записей
-    public int length() {
+    /**
+     * Метод для получения количества записей
+     * @return количество записей
+     */
+    public int length()
+    {
         return examplesBooks.size();
     }
 
-    //получить записть по айди
-    public ExampleBook getExampleBookById(int id) {
-        int index = getIndexInMasById(id);
-        if (index > -1) {
-            return examplesBooks.get(index);
-        } else
-            return null;
+    /**
+     *  метод для получения экзепляра книги по inventoryNumber
+     * @param inventoryNumber инвентарный номер
+     * @return Экзепляр книги
+     */
+    public ExampleBook getExampleBookByInventoryNumber(int inventoryNumber)
+    {
+        int index=getIndexInMasByInventoryNumber(inventoryNumber);
+        return examplesBooks.get(index);
+
     }
 
-    // Получить запись по индексу
-    public ExampleBook getExampleBookByIndex(int index) {
+    /**
+     * Метод получения экзепляра книги по индексу в examplesBooks
+     * @param index индекс
+     * @return Экзепляр книги
+     */
+    public ExampleBook getExampleBookByIndex(int index)
+    {
         return examplesBooks.get(index);
     }
 
+    /**
+     * Метод установки экзепляра книги по индексу в examplesBooks
+     * @param index индекс
+     * @param exampleBook устанавливаемый экзепляр книги
+     */
+    public void setExamplesBooks(int index,ExampleBook exampleBook)
+    {
+        examplesBooks.set(index,exampleBook);
+    }
 
+    /**
+     * Метод проверки использования инвентарного номера
+     * @param inventoryNumber проверяемый инвернтарный номер
+     * @return true если используется false если нет
+     */
+    public boolean isExistInventoryNumber(int inventoryNumber)
+    {
+        return InventoryNumberGenerator.isExistByInventoryNumber(inventoryNumber);
+    }
 }
