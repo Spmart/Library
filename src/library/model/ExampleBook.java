@@ -41,6 +41,7 @@ import java.util.Vector;
     {
         return inventoryNumber;
     }
+
     public void setInventoryNumber(int inventoryNumber){
         if(InventoryNumberGenerator.correctInventoryNumber(inventoryNumber)) {
             if(!InventoryNumberGenerator.isExistByInventoryNumber(inventoryNumber)) {
