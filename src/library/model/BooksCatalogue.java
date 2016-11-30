@@ -1,4 +1,4 @@
-package library.controller;
+package library.model;
 
 import library.model.Book;
 import java.io.*;
@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Spmart on 14.11.2016.
  */
-class BooksCatalogue {
+public class BooksCatalogue {
     private static final String FILE_NAME = "books.bin";
     private ArrayList<Book> books = new ArrayList<>();
     private static int bookId;
@@ -28,7 +28,7 @@ class BooksCatalogue {
      * @param pagesQuantity  Количество страниц в книге.
      * @return true, если книга была добавлена, или false, если добавления не произошло.
      */
-    void addBook(String authors, String name, int publishingYear, int pagesQuantity) {
+    public void addBook(String authors, String name, int publishingYear, int pagesQuantity) {
         Book book = new Book(bookId++, authors, name, publishingYear, pagesQuantity);
         if (isCanBeAdded(authors, name, publishingYear, pagesQuantity))
             books.add(book);
@@ -41,7 +41,7 @@ class BooksCatalogue {
      * @param id ID книги, которую хочет удалить пользователь.
      * @return true, если книга была удалена, или false, если такую книгу найти не удалось.
      */
-    boolean removeBook(int id) {
+    public boolean removeBook(int id) {
         Book book = getBook(id);
         if (book != null) {
             books.remove(book);
@@ -55,7 +55,7 @@ class BooksCatalogue {
      *
      * @return количество книг.
      */
-    int getBooksQuantity() {
+    public int getBooksQuantity() {
         if (books == null) return 0;
         else return books.size();
     }
@@ -65,7 +65,7 @@ class BooksCatalogue {
      *
      * @return все книги.
      */
-    ArrayList<Book> getBooks() {
+    public ArrayList<Book> getBooks() {
         if (books == null) throw new NullPointerException("Ошибка! Еще не было добавлено ни одной книги.");
         return books;
     }
@@ -76,7 +76,7 @@ class BooksCatalogue {
      * @param id Идентификационный номер книги
      * @return найденную книгу или null, если книга не найдена
      */
-    Book getBook(int id) {
+    public Book getBook(int id) {
         for (Book book : books)
             if (book.getId() == id)
                 return book;
@@ -91,7 +91,7 @@ class BooksCatalogue {
      * @param publishingYear Год издания.
      * @return Null, если книга не найдена или найденную книгу.
      */
-    Book getBook(String authors, String name, int publishingYear) {
+    public Book getBook(String authors, String name, int publishingYear) {
         Iterator<Book> iterator = books.iterator();
         while (iterator.hasNext()) {
             Book book = iterator.next();
@@ -107,7 +107,7 @@ class BooksCatalogue {
     /**
      * Читает каталог из файла.
      */
-    void readFromFile() throws IOException, ClassNotFoundException {
+    public void readFromFile() throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(FILE_NAME);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
         books = (ArrayList<Book>) (objectInputStream.readObject());
@@ -117,7 +117,7 @@ class BooksCatalogue {
     /**
      * Записывает каталог в файл.
      */
-    void writeToFile() throws IOException {
+    public void writeToFile() throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(FILE_NAME);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(books);

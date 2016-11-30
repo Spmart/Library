@@ -3,7 +3,7 @@ package library.view;
 /**
  * Created by Spmart on 19.11.2016.
  */
-class MenuTexts {
+class MenuTextsConstants {
     static final String BORDER = "=============================================================================";
     static final String HEAD = "=================Справочная система лучшей в мире библиотеки=================";
     static final String EXIT_TO_MAIN_MENU = "Выйти в главное меню";

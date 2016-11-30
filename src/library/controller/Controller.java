@@ -1,47 +1,45 @@
 package library.controller;
-import library.model.Book;
-import java.io.IOException;
-import java.util.ArrayList;
+
+import library.model.DataProvider;
+import library.view.AppMenuPrinter;
+import java.util.Scanner;
 
 /**
- * Created by Spmart on 18.11.2016.
+ * Created by Spmart on 30.11.2016.
  */
 public class Controller {
-    private BooksCatalogue booksCatalogue; //Контроллер книг
-    private CopiesCatalogue copiesCatalogue; //Контроллер экземпляров книг
+    private AppMenuPrinter printer = new AppMenuPrinter();
+    private DataProvider dataProvider = new DataProvider();
+    private Scanner scanner = new Scanner(System.in);
 
-    public Controller() {
-        booksCatalogue = new BooksCatalogue();
-        copiesCatalogue = new CopiesCatalogue();
+    public Controller() throws java.lang.ClassNotFoundException, java.io.IOException {
+        printer.printMainMenu();
+        parseUsersRequest(scanner.nextLine());
+        //dataProvider.addObserver(this); TODO: Выяснить, почему это не работает
     }
 
-    public void addBook(String authors, String name, int publishingYear, int pagesQuantity) {
-        booksCatalogue.addBook(authors, name, publishingYear, pagesQuantity);
+    public void handleBookEvent() {
+        dataProvider.getJournal();
     }
 
-    public void removeBook(int id) {
-        booksCatalogue.removeBook(id);
+    /**
+     * Обрабатывает введенные пользователем данные
+     * @param request введенный пользователем пункт меню
+     */
+    private void parseUsersRequest(String request) { //TODO: В контроллер
+        String currentRequest = request;
+        switch (currentRequest) {
+            case "1":
+                printer.printBooksCatalogueMenu();
+                currentRequest = scanner.nextLine();
+                switch (currentRequest) {
+                    case "1":
+
+                    case "2":
+                }
+            case "2":
+                printer.printCopiesCatalogueMenu();
+                currentRequest = scanner.nextLine();
+        }
     }
-
-    public int getBooksQuantity() {
-        return booksCatalogue.getBooksQuantity();
-    }
-
-    public ArrayList<Book> getBooks() {
-        return booksCatalogue.getBooks();
-    }
-
-    public Book getBook(String authors, String name, int publishingYear) {
-        return booksCatalogue.getBook(authors, name, publishingYear);
-    }
-
-    public void readFromFile() throws IOException, ClassNotFoundException {
-        booksCatalogue.readFromFile();
-    }
-
-    public void writeToFile() throws IOException {
-        booksCatalogue.writeToFile();
-    }
-
-
 }

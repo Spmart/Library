@@ -1,39 +1,15 @@
 package library.view;
 
-import library.controller.Controller;
-import java.util.Scanner;
-
 /**
  * Created by Spmart on 19.11.2016.
  */
-class AppMenu {
-    private Controller controller = new Controller();
-    private MenuTexts texts = new MenuTexts();
-    private Scanner scanner = new Scanner(System.in);
+public class AppMenuPrinter {
+    private MenuTextsConstants texts = new MenuTextsConstants();
 
-    public AppMenu() {
-        printMainMenu();
-        parseUsersRequest(scanner.nextLine());
-    }
-
-    private void parseUsersRequest(String request) {
-        String currentRequest = request;
-        switch (currentRequest) {
-            case "1":
-                printBooksCatalogueMenu();
-                currentRequest = scanner.nextLine();
-                switch (currentRequest) {
-                    case "1":
-                        System.out.println(texts.FIND_BOOK_MENU_DESCRIPTION);
-                    case "2":
-                }
-            case "2":
-                printCopiesCatalogueMenu();
-                currentRequest = scanner.nextLine();
-        }
-    }
-
-    private void printMainMenu() {
+    /**
+     * Выводит на экран главное меню приложения
+     */
+    public void printMainMenu() {
         printHead();
         System.out.println(texts.MAIN_MENU_DESCRIPTION);
         System.out.println(texts.MAIN_MENU_BOOKS_CATALOGUE);
@@ -42,6 +18,9 @@ class AppMenu {
         System.out.println(texts.MAIN_MENU_LOAD);
     }
 
+    /**
+     * Выводит на экран шапку приложения
+     */
     private void printHead() {
         clearScreen();
         System.out.println(texts.BORDER);
@@ -49,7 +28,10 @@ class AppMenu {
         System.out.println(texts.BORDER);
     }
 
-    private void printBooksCatalogueMenu() {
+    /**
+     * Выводит на экран меню каталога книг
+     */
+    public void printBooksCatalogueMenu() {
         printHead();
         System.out.println(texts.BOOKS_CATALOGUE_DESCRIPTION);
         System.out.println(texts.BOOKS_CATALOGUE_FIND_BOOK);
@@ -59,7 +41,10 @@ class AppMenu {
         System.out.println(texts.EXIT_TO_MAIN_MENU);
     }
 
-    private void printCopiesCatalogueMenu() {
+    /**
+     * Выводит на экран меню каталога экземпляров
+     */
+    public void printCopiesCatalogueMenu() {
         printHead();
         System.out.println(texts.COPIES_CATALOGUE_DESCRIPTION);
         System.out.println(texts.COPIES_CATALOGUE_FIND_COPY);
@@ -70,7 +55,10 @@ class AppMenu {
         System.out.println(texts.EXIT_TO_MAIN_MENU);
     }
 
-    private void clearScreen() {
+    /**
+     * Очищает экран
+     */
+    public void clearScreen() {
         for (int i = 0; i < 25; i++)
             System.out.println();
     }
