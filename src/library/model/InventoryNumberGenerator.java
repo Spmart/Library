@@ -29,7 +29,7 @@ public class InventoryNumberGenerator {
      */
     public static boolean correctInventoryNumber(int inventoryNumber)
     {
-        return (inventoryNumber>=MIN_VALUE&&inventoryNumber<=MIN_VALUE);
+        return (inventoryNumber>=MIN_VALUE&&inventoryNumber<=MAX_VALUE);
     }
     /**
      * Метод проверки на занятость инвентарного номера
@@ -54,7 +54,7 @@ public class InventoryNumberGenerator {
     {
         int[] masNumbers=new int [examplesBooks.size()];
         int index=0;
-        if(masNumbers.length>0) {
+        if(masNumbers.length>1) {
             for (ExampleBook exampleBook : examplesBooks) {
                 masNumbers[index] = exampleBook.getInventoryNumber();
                 index++;
@@ -65,10 +65,20 @@ public class InventoryNumberGenerator {
                     return masNumbers[index] + 1;
                 }
             }
-            return masNumbers[index + 1] + 1;
+            return masNumbers[index] + 1;
         }
         else
-            return MIN_VALUE;
+        {
+            if(masNumbers.length==0)
+            {
+                return MIN_VALUE;
+            }
+            else
+            {
+                return examplesBooks.get(0).getInventoryNumber()+1;
+            }
+        }
+
     }
 
 }

@@ -29,10 +29,10 @@ class BooksCatalogue {
      * @return true, если книга была добавлена, или false, если добавления не произошло.
      */
     void addBook(String authors, String name, int publishingYear, int pagesQuantity) {
+        if(isExist(authors,name,publishingYear))
+            throw new IllegalArgumentException("Книга уже существует");
         Book book = new Book(bookId++, authors, name, publishingYear, pagesQuantity);
-        if (isCanBeAdded(authors, name, publishingYear, pagesQuantity))
-            books.add(book);
-        else throw new IllegalArgumentException ("Ошибка! Книнга уже существует или введены некорректные сведения.");
+        books.add(book);
     }
 
     /**
@@ -112,6 +112,12 @@ class BooksCatalogue {
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
         books = (ArrayList<Book>) (objectInputStream.readObject());
         objectInputStream.close();
+        if(books.size()>0) {
+            bookId = books.get(books.size() - 1).getId() + 1;
+        }
+        else
+            bookId=0;
+
     }
 
     /**
@@ -139,31 +145,54 @@ class BooksCatalogue {
         }
     }
 
-    /**
-     * Проверяет введенный год на корректность.
-     *
-     * @param year Год.
-     * @return True, если год корректен. False, если год некорректен.
-     */
-    private boolean isCorrectYear(int year) {
-        long currentTimeMillis = System.currentTimeMillis();
-        String currentYear = new SimpleDateFormat("yyyy").format(currentTimeMillis);
-        if (year < 100 || year > Integer.valueOf(currentYear)) return false;
-        else return true;
-    }
 
     /**
      * Проверяет возможность добавления книги в каталог.
      *
-     * @param authors        Автор(ы), написавший данную книгу.
-     * @param name           Название книги.
-     * @param publishingYear Год издания.
-     * @param pagesQuantity  Количество страниц в книге.
+     //* @param authors        Автор(ы), написавший данную книгу.
+     //* @param name           Название книги.
+     //* @param publishingYear Год издания.
+     //* @param pagesQuantity  Количество страниц в книге.
      * @return True, если книгу добавить возможно. False, если невозможно.
      */
-    private boolean isCanBeAdded(String authors, String name, int publishingYear, int pagesQuantity) {
+    /*private boolean isCanBeAdded(String authors, String name, int publishingYear, int pagesQuantity) {
         if (!isCorrectYear(publishingYear) || pagesQuantity < 0 || isExist(authors, name, publishingYear))
             return false;
         else return true;
+
+        return isCorrectYear(publishingYear) && pagesQuantity > 0 && !isExist(authors, name, publishingYear)&&!authors.isEmpty()&&!name.isEmpty();
+    }*/
+    public void setBook(int idBook,Book book)
+    {
+        if(isExist(book.getAuthors(),book.getName(),book.getPublishingYear()))
+            throw new IllegalArgumentException("Книга уже существует");
+        for(int index=books.size()-1;index>-1;index--)
+        {
+            if(books.get(index).getId()==idBook)
+            {
+                books.remove(index);
+                book.setId(idBook);
+                books.add(index,book);
+
+            }
+        }
     }
+
+    public static void main(String[] arg)
+    {
+        BooksCatalogue booksCatalogue=new BooksCatalogue();
+        booksCatalogue.addBook("автор1","название1", 100,1);
+        booksCatalogue.addBook("автор2","название2", 200,2);
+        booksCatalogue.addBook("автор3","название3", 300,3);
+        booksCatalogue.addBook("автор4","название4", 400,4);
+        booksCatalogue.addBook("автор5","название5", 500,5);
+        try {
+            booksCatalogue.writeToFile();
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
 }

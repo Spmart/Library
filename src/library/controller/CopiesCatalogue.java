@@ -15,9 +15,19 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     private String nameFileForExamples="ExamplesBooks.bin";
 
 
-    public CopiesCatalogue()throws java.lang.ClassNotFoundException,java.io.IOException
+    public CopiesCatalogue()
     {
-        read();
+        try {
+            read();
+        }
+        catch (IOException e)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
+        }
+        catch (ClassNotFoundException e)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
+        }
         InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
@@ -27,8 +37,17 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
      */
     public CopiesCatalogue(String fileExamplesBooks)throws java.lang.ClassNotFoundException,java.io.IOException
     {
-        nameFileForExamples=fileExamplesBooks;
-        read();
+        try {
+            read(fileExamplesBooks);
+        }
+        catch (IOException e)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
+        }
+        catch (ClassNotFoundException e)
+        {
+            examplesBooks=new ArrayList<ExampleBook>();
+        }
         InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
@@ -66,10 +85,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
         ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(nameFileForExamples));
         examplesBooks=(ArrayList<ExampleBook>) (inputFile.readObject());
         inputFile.close();
-        if (examplesBooks==null)
-        {
-            examplesBooks=new ArrayList<ExampleBook>();
-        }
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
     /**
      * Метод чтения из файла
@@ -82,10 +98,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
         ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(nameFileForExamples));
         examplesBooks=(ArrayList<ExampleBook>) (inputFile.readObject());
         inputFile.close();
-        if (examplesBooks==null)
-        {
-            examplesBooks=new ArrayList<ExampleBook>();
-        }
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
     /**
      * сохраняет экзепляры книг в файл
@@ -106,6 +119,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     public void addExampleBook( int idBook, boolean issued)
     {
         examplesBooks.add(new ExampleBook(idBook,issued));
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
     /**
@@ -117,6 +131,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     public void addExampleBook(int idBook,boolean issued, int inventoryNumber)
     {
         examplesBooks.add(new ExampleBook(inventoryNumber,idBook,issued));
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
     /**
@@ -131,6 +146,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
                 if(exampleBook.getInventoryNumber()==inventoryNumber)
                 {
                     examplesBooks.remove(exampleBook);
+                    InventoryNumberGenerator.setExamplesBooks(examplesBooks);
                     return;
                 }
             }
@@ -147,6 +163,7 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     public void removeExampleBookByIndex(int index)
     {
         examplesBooks.remove(index);
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
     }
 
     /**
@@ -196,6 +213,29 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     public void setExamplesBooks(int index,ExampleBook exampleBook)
     {
         examplesBooks.set(index,exampleBook);
+        InventoryNumberGenerator.setExamplesBooks(examplesBooks);
+    }
+
+    public void setExamplesBooksByInventoryNumber(int inventoryNumber , ExampleBook inExampleBook)
+    {
+        if(InventoryNumberGenerator.correctInventoryNumber(inventoryNumber)) {
+
+            for (int index=examplesBooks.size()-1;index>-1;index--)
+            {
+                if(examplesBooks.get(index).getInventoryNumber()==inventoryNumber)
+                {
+                    examplesBooks.remove(index);
+                    InventoryNumberGenerator.setExamplesBooks(examplesBooks);
+                    inExampleBook.setInventoryNumber(inventoryNumber);
+                    examplesBooks.add(index,inExampleBook);
+                    InventoryNumberGenerator.setExamplesBooks(examplesBooks);
+                    return;
+                }
+            }
+            throw new InventoryNumberException(InventoryNumberException.NOT_EXIST);
+        }
+        else
+            throw new InventoryNumberException(InventoryNumberException.NOT_CORRECT);
     }
 
     /**
@@ -223,6 +263,25 @@ public class CopiesCatalogue implements Iterable<ExampleBook> {
     @Override
     public Iterator<ExampleBook> iterator() {
         return new IteratorExampleBook();
+    }
+    public static void main(String[] args)
+    {
+        CopiesCatalogue copiesCatalogue=null;
+        copiesCatalogue = new CopiesCatalogue();
+
+
+        copiesCatalogue.addExampleBook(0,false);
+        copiesCatalogue.addExampleBook(1,false);
+        copiesCatalogue.addExampleBook(2,false);
+        copiesCatalogue.addExampleBook(3,false);
+        copiesCatalogue.addExampleBook(4,false);
+        try {
+            copiesCatalogue.save();
+        }
+        catch (IOException e)
+        {
+
+        }
     }
 
 }
